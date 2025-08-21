@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { CheckCircle, XCircle, Copy, RotateCcw, FileText, Send, Loader2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
 
 const EXAMPLE_JSONS = {
   "user-basic": {
@@ -158,7 +157,6 @@ export function JsonFormComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
   const [isExampleSelected, setIsExampleSelected] = useState(false)
-  const { toast } = useToast()
 
   const validateAndParseJson = useCallback((input: string) => {
     if (!input.trim()) {
@@ -193,30 +191,18 @@ export function JsonFormComponent() {
     setApiMethod(example.apiMethod)
     setApiUrl(example.apiUrl)
     setIsExampleSelected(true)
-    toast({
-      title: "Example loaded",
-      description: `Loaded ${example.name} example with ${example.apiMethod} endpoint`,
-    })
   }
 
   const formatJson = () => {
     if (parsedJson) {
       const formatted = JSON.stringify(parsedJson, null, 2)
       setJsonInput(formatted)
-      toast({
-        title: "JSON formatted",
-        description: "Your JSON has been properly formatted",
-      })
     }
   }
 
   const copyToClipboard = async () => {
     if (jsonInput) {
       await navigator.clipboard.writeText(jsonInput)
-      toast({
-        title: "Copied to clipboard",
-        description: "JSON has been copied to your clipboard",
-      })
     }
   }
 
@@ -229,10 +215,6 @@ export function JsonFormComponent() {
     setApiResponse(null)
     setApiError(null)
     setIsExampleSelected(false)
-    toast({
-      title: "Form cleared",
-      description: "JSON form has been reset",
-    })
   }
 
   const getJsonStats = () => {
@@ -250,20 +232,10 @@ export function JsonFormComponent() {
 
   const callApi = async () => {
     if (!apiUrl.trim()) {
-      toast({
-        title: "URL Required",
-        description: "Please enter an API URL",
-        variant: "destructive",
-      })
       return
     }
 
     if (!isValid && apiMethod !== "GET") {
-      toast({
-        title: "Invalid JSON",
-        description: "Please fix JSON errors before making API call",
-        variant: "destructive",
-      })
       return
     }
 
@@ -305,19 +277,9 @@ export function JsonFormComponent() {
         const data = await response.json()
         setApiResponse({ status: response.status, data })
       }
-
-      toast({
-        title: "API Call Successful",
-        description: `${apiMethod} request completed successfully`,
-      })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "API call failed"
       setApiError(errorMessage)
-      toast({
-        title: "API Call Failed",
-        description: errorMessage,
-        variant: "destructive",
-      })
     } finally {
       setIsLoading(false)
     }
@@ -326,10 +288,6 @@ export function JsonFormComponent() {
   const loadApiExample = () => {
     const example = API_EXAMPLES[apiMethod]
     setApiUrl(example.url)
-    toast({
-      title: "Example loaded",
-      description: `Loaded ${apiMethod} example URL`,
-    })
   }
 
   const groupedExamples = Object.entries(EXAMPLE_JSONS).reduce(
@@ -470,9 +428,7 @@ export function JsonFormComponent() {
                     lineHeight: "1.5",
                   }}
                   dangerouslySetInnerHTML={{
-                    __html: jsonInput
-                      ? highlightJson(jsonInput)
-                      : '',
+                    __html: jsonInput ? highlightJson(jsonInput) : "",
                   }}
                 />
               </div>
